@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102a43"><meta name="description" content="Gestion professionnelle des activités d'interprétation">
+  <link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css">
+  <title>INTERPRETER DASHBOARD PRO</title>
+</head>
+<body>
+  <div id="authScreen" class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand-mark">IP</div><p class="eyebrow">VOTRE ESPACE PROFESSIONNEL</p>
+      <h1>INTERPRETER <span>DASHBOARD PRO</span></h1><p class="muted">Pilotez vos missions, vos clients, votre facturation et vos finances dans un espace professionnel.</p>
+      <form id="loginForm">
+        <label>Adresse e-mail<input id="email" type="email" autocomplete="username" required placeholder="vous@exemple.com"></label>
+        <label>Mot de passe<input id="password" type="password" autocomplete="current-password" required placeholder="Votre mot de passe"></label>
+        <button class="primary full" type="submit">Se connecter</button>
+      </form>
+      <p id="authMessage" class="message" aria-live="polite"></p>
+      <small>Votre compte sera créé dans le nouveau projet sécurisé de votre organisation.</small>
+    </div>
+  </div>
+  <div id="appScreen" class="app hidden">
+    <aside class="sidebar">
+      <div class="side-brand"><div class="brand-mark small">IP</div><div><b>INTERPRETER</b><small>DASHBOARD PRO</small></div></div>
+      <nav id="mainNav">
+        <button class="nav-item active" data-page="dashboard">▦ <span>Tableau de bord</span></button>
+        <button class="nav-item" data-page="missions">▣ <span>Missions</span></button>
+        <button class="nav-item" data-page="clients">♙ <span>Clients</span></button>
+        <button class="nav-item" data-page="invoices">▤ <span>Factures</span></button>
+        <button class="nav-item" data-page="payments">＄ <span>Paiements</span></button>
+        <button class="nav-item" data-page="expenses">↘ <span>Dépenses</span></button>
+        <button class="nav-item" data-page="calendar">▦ <span>Calendrier</span></button>
+        <button class="nav-item" data-page="reports">◫ <span>Statistiques</span></button>
+      </nav>
+      <div class="side-bottom"><div id="syncState" class="sync-state">● Connexion en cours…</div><button id="logoutBtn" class="logout">↪ Déconnexion</button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div><p class="eyebrow">ESPACE DE GESTION</p><h2 id="pageTitle">Tableau de bord</h2></div><div class="top-actions"><span class="currency">FCFA</span><button id="installBtn" class="secondary hidden">Installer l’application</button></div></header>
+      <section id="pageContent" class="content"></section>
+      <footer>INTERPRETER DASHBOARD PRO <span>•</span> Français ↔ Anglais <span>•</span> FCFA</footer>
+    </main>
+  </div>
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script><script src="app.js"></script>
+</body></html>
