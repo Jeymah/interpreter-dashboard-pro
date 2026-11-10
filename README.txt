@@ -27,3 +27,19 @@ LIMITES À CONNAÎTRE
 - L'invitation et l'administration des collaborateurs, l'export PDF des factures, les sauvegardes automatisées et les tests de sécurité approfondis restent à développer.
 - Les données ne sont pas migrées depuis l'ancien Supabase.
 - Les comptes utilisateurs se créent dans Supabase Authentication; le premier accès crée automatiquement l'espace de travail.
+
+
+MISE À JOUR VISUELLE — VERSION ORANGE / BLANC / VERT
+- Logo officiel intégré à la connexion et à la navigation.
+- Icônes PWA icon-192.png et icon-512.png ajoutées au manifeste.
+- Thème de l'application harmonisé en orange, blanc et vert.
+- Service worker enregistré automatiquement et cache actualisé (v2).
+
+PUBLICATION
+1. Remplacer les fichiers du dépôt GitHub par TOUS les fichiers de ce dossier.
+2. Sur Render (Static Site), laisser Build Command vide et Publish Directory = .
+3. Déclencher un nouveau déploiement.
+4. Ouvrir le site en HTTPS. Sur Android : menu Chrome > Installer l'application (ou Ajouter à l'écran d'accueil). Sur PC : icône Installer dans la barre d'adresse ou menu du navigateur > Installer l'application.
+5. Si l'ancienne version reste affichée, fermer l'application installée et recharger le site ; au besoin, vider les données du site dans le navigateur puis réinstaller.
+
+Le bouton d'installation intégré apparaît lorsque le navigateur prend en charge l'invite PWA. Sur iPhone/iPad, utiliser Partager > Sur l'écran d'accueil dans Safari.

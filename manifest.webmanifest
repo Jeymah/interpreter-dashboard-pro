@@ -3,8 +3,23 @@
   "short_name": "Interpreter Pro",
   "description": "Gestion professionnelle des activités d'interprétation",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f3f6f9",
-  "theme_color": "#102a43",
-  "icons": []
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#078B36",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }

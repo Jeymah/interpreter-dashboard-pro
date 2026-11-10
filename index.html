@@ -2,24 +2,17 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#102a43"><meta name="description" content="Gestion professionnelle des activités d'interprétation">
+  <meta name="theme-color" content="#078B36">
+  <meta name="msapplication-TileColor" content="#078B36">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png"><meta name="description" content="Gestion professionnelle des activités d'interprétation">
   <link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css">
   <title>INTERPRETER DASHBOARD PRO</title>
-	<link rel="manifest" href="./manifest.json">
-</head>	
-	<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js")
-      .then(() => console.log("Service Worker enregistré"))
-      .catch(error => console.error("Erreur Service Worker :", error));
-  });
-}
-</script>
+</head>
 <body>
   <div id="authScreen" class="auth-wrap">
     <div class="auth-card">
-      <div class="brand-mark">IP</div><p class="eyebrow">VOTRE ESPACE PROFESSIONNEL</p>
+      <img class="brand-logo auth-logo" src="logo-interpreter-dashboard-pro.png" alt="Logo INTERPRETER DASHBOARD PRO"><p class="eyebrow">VOTRE ESPACE PROFESSIONNEL</p>
       <h1>INTERPRETER <span>DASHBOARD PRO</span></h1><p class="muted">Pilotez vos missions, vos clients, votre facturation et vos finances dans un espace professionnel.</p>
       <form id="loginForm">
         <label>Adresse e-mail<input id="email" type="email" autocomplete="username" required placeholder="vous@exemple.com"></label>
@@ -32,7 +25,7 @@ if ("serviceWorker" in navigator) {
   </div>
   <div id="appScreen" class="app hidden">
     <aside class="sidebar">
-      <div class="side-brand"><div class="brand-mark small">IP</div><div><b>INTERPRETER</b><small>DASHBOARD PRO</small></div></div>
+      <div class="side-brand"><img class="brand-logo side-logo" src="logo-interpreter-dashboard-pro.png" alt=""><div><b>INTERPRETER</b><small>DASHBOARD PRO</small></div></div>
       <nav id="mainNav">
         <button class="nav-item active" data-page="dashboard">▦ <span>Tableau de bord</span></button>
         <button class="nav-item" data-page="missions">▣ <span>Missions</span></button>
@@ -55,4 +48,5 @@ if ("serviceWorker" in navigator) {
   <div id="toast" class="toast" role="status"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script><script src="app.js"></script>
+  <script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker non enregistré', err)));</script>
 </body></html>
