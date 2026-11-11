@@ -74,3 +74,33 @@
   .page-head{gap:10px}
   .page-head .primary{width:100%}
 }
+
+/* CORRECTIF MOBILE ANDROID — largeur, navigation et lisibilité */
+@media (max-width:640px){
+  html,body{width:100%;min-width:0;max-width:100%;overflow-x:hidden}
+  #appScreen,.app,.main,.sidebar,.topbar,.content,#pageContent{width:100%;max-width:100%;min-width:0}
+  .app{display:block}
+  .sidebar{display:block;box-sizing:border-box;padding:10px 12px 9px;position:sticky;top:0;z-index:5}
+  .side-brand{display:flex;align-items:center;padding:0 4px 9px;min-width:0}
+  .sidebar nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;overflow:visible;width:100%}
+  .nav-item{min-width:0;width:100%;min-height:48px;padding:6px 2px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;white-space:normal;text-align:center;border-radius:8px;font-size:15px;line-height:1.1}
+  .nav-item span{display:block;max-width:100%;font-size:10px;line-height:1.15;overflow-wrap:anywhere}
+  .topbar{box-sizing:border-box;display:flex;flex-wrap:wrap;gap:10px;padding:13px 14px}
+  .topbar>div:first-child{width:100%;min-width:0}
+  .top-actions{width:100%;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  .global-search{width:100%;min-width:0;max-width:100%}
+  .content{box-sizing:border-box;padding:14px 12px}
+  .stats-grid{display:grid;width:100%;max-width:100%;min-width:0;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .stat-card{min-width:0;padding:12px;overflow:hidden}
+  .stat-card .label,.stat-card small{overflow-wrap:anywhere}
+  .stat-card strong{font-size:clamp(15px,4.4vw,19px);overflow-wrap:anywhere}
+  .two-col{display:grid;width:100%;min-width:0;grid-template-columns:minmax(0,1fr);gap:12px}
+  .panel,.table-wrap{min-width:0;max-width:100%}
+  .panel{padding:14px}
+  .table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:590px}
+  .page-head{width:100%;min-width:0}
+  .form-grid{grid-template-columns:minmax(0,1fr)}
+  .field,.field input,.field select,.field textarea{min-width:0}
+  .main footer{padding:14px 12px;overflow-wrap:anywhere}
+}
