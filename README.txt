@@ -43,3 +43,16 @@ PUBLICATION
 5. Si l'ancienne version reste affichée, fermer l'application installée et recharger le site ; au besoin, vider les données du site dans le navigateur puis réinstaller.
 
 Le bouton d'installation intégré apparaît lorsque le navigateur prend en charge l'invite PWA. Sur iPhone/iPad, utiliser Partager > Sur l'écran d'accueil dans Safari.
+
+
+MISE A JOUR — VERSION MOBILE ET RECHERCHE GLOBALE
+- Barre de recherche accessible depuis l'en-tête sur ordinateur et téléphone.
+- Recherche transversale dans les clients, missions/événements, factures, paiements et dépenses.
+- Recherche par nom, coordonnées, intitulé, référence, date, période, statut, lieu et notes.
+- Ouverture d'une fiche résultat avec ses informations et les enregistrements liés disponibles.
+- Accès direct à la modification depuis la fiche de résultat.
+- En-tête et résultats de recherche adaptés aux petits écrans.
+- Cache PWA actualisé en version v3.
+
+IMPORTANT AVANT PUBLICATION
+Vérifier que l'URL Supabase et la clé publishable de config.js correspondent bien au projet Supabase que vous souhaitez utiliser. Ne pas remplacer ces valeurs sans confirmation.

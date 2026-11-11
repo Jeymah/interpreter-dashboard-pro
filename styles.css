@@ -30,3 +30,47 @@
 .toast{background:var(--green)}
 .auth-card input:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #078b3618}
 @media(max-width:640px){.auth-logo{width:min(100%,210px);max-height:160px}.side-logo{width:38px;height:38px;flex-basis:38px}}
+
+/* Recherche globale et ergonomie mobile */
+.top-actions{min-width:0}
+.global-search{position:relative;display:flex;align-items:center;width:min(480px,48vw);min-width:240px;background:#f8fbf8;border:1px solid #dce9de;border-radius:12px;padding:0 10px;gap:8px}
+.global-search:focus-within{border-color:var(--green);box-shadow:0 0 0 3px #078b3614}
+.search-icon{font-size:23px;color:var(--green);line-height:1}
+.global-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;padding:12px 0;color:var(--ink);font-size:13px}
+.clear-search{border:0;background:transparent;color:#718176;font-size:21px;padding:2px 4px}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;max-height:min(65vh,520px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 16px 40px #17351e24;z-index:20;padding:7px}
+.search-results-heading{padding:9px 10px;color:var(--muted);font-size:11px;font-weight:700}
+.search-result{display:grid;width:100%;text-align:left;gap:3px;border:0;border-radius:9px;background:#fff;padding:10px;cursor:pointer}
+.search-result:hover,.search-result:focus{background:#eff8f0;outline:0}
+.search-result-type{font-size:10px;color:#b85c00;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.search-result b{font-size:13px;color:var(--green)}
+.search-result small{font-size:11px;color:var(--muted)}
+.search-empty{padding:18px 12px;color:var(--muted);font-size:12px}
+.search-detail-modal{max-width:720px}
+.detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.detail-field{padding:10px 12px;background:#f7faf7;border:1px solid #e7eee7;border-radius:9px;min-width:0}
+.detail-field small{display:block;text-transform:capitalize;font-size:10px;margin-bottom:4px}
+.detail-field b{display:block;font-size:13px;overflow-wrap:anywhere;color:var(--ink)}
+.linked-detail{margin-top:16px;padding-top:13px;border-top:1px solid var(--line)}
+.linked-detail h4{margin:0 0 7px;color:var(--green);font-size:13px}
+.linked-detail ul{margin:0;padding-left:19px;color:var(--muted);font-size:12px;line-height:1.8}
+@media(max-width:640px){
+  .topbar{display:flex;flex-wrap:wrap;gap:12px;padding:13px 14px}
+  .topbar>div:first-child{width:100%}
+  .topbar .eyebrow{font-size:9px}
+  .topbar h2{font-size:18px}
+  .top-actions{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  .global-search{width:100%;min-width:0}
+  .global-search input{font-size:12px;padding:11px 0}
+  .currency{white-space:nowrap;align-self:center}
+  .search-results{position:fixed;left:10px;right:10px;top:145px;max-height:55vh}
+  .detail-grid{grid-template-columns:1fr}
+  .search-detail-modal{padding:18px}
+  .modal-backdrop{padding:9px}
+  .modal{max-height:94vh}
+  .modal-actions{position:sticky;bottom:-18px;background:white;padding:12px 0 2px}
+  .table-wrap{border-radius:10px}
+  th,td{padding:11px 10px}
+  .page-head{gap:10px}
+  .page-head .primary{width:100%}
+}

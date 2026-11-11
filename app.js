@@ -32,6 +32,67 @@
   function calendar(){const now=new Date(),year=now.getFullYear(),month=now.getMonth(),first=new Date(year,month,1),offset=(first.getDay()+6)%7,days=new Date(year,month+1,0).getDate(),names=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];let cells=names.map(n=>`<div class="calendar-day" style="min-height:auto;background:#edf3f6"><b>${n}</b></div>`).join('');for(let i=0;i<offset;i++)cells+='<div></div>';for(let d=1;d<=days;d++){const date=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,events=cache.missions.filter(m=>m.start_date<=date&&m.end_date>=date);cells+=`<div class="calendar-day ${date===today()?'today':''}"><b>${d}</b>${events.map(m=>`<div class="calendar-event" title="${esc(m.title)}">${esc(m.title)}</div>`).join('')}</div>`}return `<div class="panel"><h3>${now.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</h3><div class="calendar-grid">${cells}</div></div>`}
   function reports(){const rev=cache.payments.reduce((s,x)=>s+Number(x.amount||0),0),exp=cache.expenses.reduce((s,x)=>s+Number(x.amount||0),0),max=Math.max(rev,exp,1);return `<div class="stats-grid">${stat('Recettes encaissées',money(rev),'Total des paiements')}${stat('Dépenses',money(exp),'Total des dépenses')}${stat('Résultat net',money(rev-exp),'Recettes moins dépenses')}${stat('Jours facturés',cache.missions.reduce((s,x)=>s+Number(x.billable_days||0),0),'Toutes les missions')}</div><div class="panel"><h3>Comparatif financier</h3>${[['Recettes',rev],['Dépenses',exp]].map(([l,v])=>`<div class="bar-row"><span>${l}</span><div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%"></div></div><b>${money(v)}</b></div>`).join('')}</div><div class="panel"><h3>Activité</h3><p>${cache.missions.length} missions, ${cache.clients.length} clients, ${cache.invoices.length} factures et ${cache.payments.length} paiements enregistrés.</p></div>`}
   function render(){if(!workspaceId)return;let html=currentPage==='dashboard'?dashboard():['clients','missions','invoices','payments','expenses'].includes(currentPage)?crudPage(currentPage):currentPage==='calendar'?calendar():reports();$('#pageContent').innerHTML=html;$('#pageContent').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>openModal(b.dataset.add));$('#pageContent').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openModal(b.dataset.edit,b.dataset.id));$('#pageContent').querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>removeRecord(b.dataset.delete,b.dataset.id))}
-  async function init(){if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY||cfg.SUPABASE_URL.includes('VOTRE-NOUVEAU-PROJET')||cfg.SUPABASE_ANON_KEY.includes('VOTRE_CLE')||!window.supabase){$('#authMessage').textContent='Configuration non terminée : ajoutez l’URL et la clé publishable de votre nouveau projet Supabase dans config.js.';return}sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);$('#loginForm').addEventListener('submit',login);$('#logoutBtn').onclick=async()=>{await sb.auth.signOut();user=null;workspaceId=null;showAuth()};$('#mainNav').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(!b)return;currentPage=b.dataset.page;nav()});const {data}=await sb.auth.getSession();if(data.session){user=data.session.user;try{await loadWorkspace();showApp();await refreshAll();subscribe()}catch(e){console.error(e);$('#authMessage').textContent='Impossible de charger votre espace : '+e.message;await sb.auth.signOut()}}if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(console.warn)}
+
+  const searchTypes={clients:'Client',missions:'Mission / événement',invoices:'Facture',payments:'Paiement',expenses:'Dépense'};
+  function norm(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+  function clientName(id){return cache.clients.find(c=>c.id===id)?.name||''}
+  function searchRecords(query){
+    const q=norm(query).trim();if(!q)return [];
+    const out=[];
+    Object.entries(searchTypes).forEach(([type,label])=>{
+      (cache[type]||[]).forEach(record=>{
+        const client=clientName(record.client_id);
+        const invoice=cache.invoices.find(i=>i.id===record.invoice_id)?.invoice_number||'';
+        const searchable=[...Object.values(record),client,invoice].join(' ');
+        if(norm(searchable).includes(q)){
+          let title=record.name||record.title||record.invoice_number||record.label||record.reference||label;
+          let detail=type==='clients'?[record.organization,record.phone,record.email].filter(Boolean).join(' • ')
+            :type==='missions'?[client,record.start_date&&record.end_date?`${record.start_date} → ${record.end_date}`:record.start_date,record.location].filter(Boolean).join(' • ')
+            :type==='invoices'?[client,record.issue_date,record.status].filter(Boolean).join(' • ')
+            :type==='payments'?[client,record.payment_date,record.method].filter(Boolean).join(' • ')
+            :[record.expense_date,record.category].filter(Boolean).join(' • ');
+          out.push({type,id:record.id,label,title,detail:detail||label,record});
+        }
+      });
+    });
+    return out.slice(0,40);
+  }
+  function showSearchResults(query){
+    const box=$('#searchResults');if(!box)return;
+    const q=query.trim();if(q.length<2){box.classList.add('hidden');box.innerHTML='';return}
+    const hits=searchRecords(q);
+    box.innerHTML=hits.length?`<div class="search-results-heading">${hits.length} résultat(s) correspondant(s)</div>${hits.map(x=>`<button type="button" class="search-result" data-search-open="${esc(x.type)}" data-id="${esc(x.id)}"><span class="search-result-type">${esc(x.label)}</span><b>${esc(x.title)}</b><small>${esc(x.detail)}</small></button>`).join('')}`:`<div class="search-empty">Aucun résultat pour « ${esc(q)} »</div>`;
+    box.classList.remove('hidden');
+    box.querySelectorAll('[data-search-open]').forEach(b=>b.addEventListener('click',()=>{const type=b.dataset.searchOpen,id=b.dataset.id;box.classList.add('hidden');$('#globalSearch').blur();showSearchDetail(type,id)}));
+  }
+  function showSearchDetail(type,id){
+    const r=(cache[type]||[]).find(x=>x.id===id);if(!r)return;
+    const linked=[];
+    if(type==='clients'){
+      const ms=cache.missions.filter(x=>x.client_id===id),ins=cache.invoices.filter(x=>x.client_id===id),ps=cache.payments.filter(x=>x.client_id===id);
+      linked.push(['Missions',ms.map(x=>`${x.title} (${x.start_date||'date non précisée'})`)],['Factures',ins.map(x=>`${x.invoice_number} — ${money(x.amount)} (${x.status||'—'})`)],['Paiements',ps.map(x=>`${x.payment_date||'—'} — ${money(x.amount)}`)]);
+    }else if(type==='missions'){
+      const c=cache.clients.find(x=>x.id===r.client_id);if(c)linked.push(['Client',[c.name]]);
+      const ins=cache.invoices.filter(x=>x.mission_id===id);linked.push(['Factures associées',ins.map(x=>`${x.invoice_number} — ${money(x.amount)}`)]);
+    }else if(type==='invoices'){
+      const c=cache.clients.find(x=>x.id===r.client_id);if(c)linked.push(['Client',[c.name]]);
+      const ps=cache.payments.filter(x=>x.invoice_id===id);linked.push(['Paiements associés',ps.map(x=>`${x.payment_date||'—'} — ${money(x.amount)}`)]);
+    }else if(type==='payments'){
+      const c=cache.clients.find(x=>x.id===r.client_id);if(c)linked.push(['Client',[c.name]]);
+      const inv=cache.invoices.find(x=>x.id===r.invoice_id);if(inv)linked.push(['Facture',[inv.invoice_number]]);
+    }
+    const skip=new Set(['id','workspace_id','created_at','updated_at']);
+    const fields=Object.entries(r).filter(([k,v])=>!skip.has(k)&&v!==null&&v!==''&&typeof v!=='object');
+    const pretty=k=>({name:'Nom',email:'E-mail',phone:'Téléphone',organization:'Organisation',address:'Adresse',title:'Intitulé',start_date:'Date de début',end_date:'Date de fin',daily_rate:'Tarif journalier',total_amount:'Montant total',billable_days:'Jours facturés',location:'Lieu',status:'Statut',invoice_number:'N° facture',issue_date:'Date d’émission',due_date:'Échéance',amount:'Montant',payment_date:'Date du paiement',method:'Mode de paiement',reference:'Référence',expense_date:'Date',label:'Libellé',category:'Catégorie',notes:'Notes'}[k]||k.replaceAll('_',' '));
+    $('#modalRoot').innerHTML=`<div class="modal-backdrop"><div class="modal search-detail-modal"><div class="modal-head"><div><p class="eyebrow">${esc(searchTypes[type])}</p><h3>${esc(r.name||r.title||r.invoice_number||r.label||'Détails')}</h3></div><button class="close" type="button" data-close>✕</button></div><div class="detail-grid">${fields.map(([k,v])=>`<div class="detail-field"><small>${esc(pretty(k))}</small><b>${esc(k.includes('amount')||k==='daily_rate'?money(v):v)}</b></div>`).join('')}</div>${linked.filter(x=>x[1].length).map(([heading,items])=>`<section class="linked-detail"><h4>${esc(heading)}</h4><ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section>`).join('')}<div class="modal-actions"><button class="secondary" type="button" data-close>Fermer</button><button class="primary" type="button" id="editSearchRecord">Modifier cette fiche</button></div></div></div>`;
+    $('#modalRoot').querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$('#modalRoot').innerHTML='');
+    $('#modalRoot').querySelector('.modal-backdrop').onclick=e=>{if(e.target.classList.contains('modal-backdrop'))$('#modalRoot').innerHTML=''};
+    $('#editSearchRecord').onclick=()=>openModal(type,id);
+  }
+
+  async function init(){if(!cfg.SUPABASE_URL||!cfg.SUPABASE_ANON_KEY||cfg.SUPABASE_URL.includes('VOTRE-NOUVEAU-PROJET')||cfg.SUPABASE_ANON_KEY.includes('VOTRE_CLE')||!window.supabase){$('#authMessage').textContent='Configuration non terminée : ajoutez l’URL et la clé publishable de votre nouveau projet Supabase dans config.js.';return}sb=window.supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);$('#loginForm').addEventListener('submit',login);$('#logoutBtn').onclick=async()=>{await sb.auth.signOut();user=null;workspaceId=null;showAuth()};$('#globalSearch').addEventListener('input',e=>showSearchResults(e.target.value));
+    $('#clearSearch').addEventListener('click',()=>{$('#globalSearch').value='';showSearchResults('');$('#globalSearch').focus()});
+    document.addEventListener('click',e=>{if(!e.target.closest('#globalSearchWrap'))$('#searchResults')?.classList.add('hidden')});
+    $('#mainNav').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(!b)return;currentPage=b.dataset.page;nav()});const {data}=await sb.auth.getSession();if(data.session){user=data.session.user;try{await loadWorkspace();showApp();await refreshAll();subscribe()}catch(e){console.error(e);$('#authMessage').textContent='Impossible de charger votre espace : '+e.message;await sb.auth.signOut()}}if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(console.warn)}
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('#installBtn').classList.remove('hidden')});$('#installBtn').onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('#installBtn').classList.add('hidden')};init();
 })();
